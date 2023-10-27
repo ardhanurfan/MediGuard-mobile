@@ -1,15 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:mediguard/models/sensor_model.dart';
+import 'package:mediguard/providers/sensor_provider.dart';
+import 'package:mediguard/services/socket_service.dart';
 import 'package:mediguard/widgets/custom_button.dart';
 import 'package:mediguard/widgets/logo_horizontal.dart';
+import 'package:provider/provider.dart';
 
 import '../shared/theme.dart';
 import '../widgets/header.dart';
 
-class MonitorPage extends StatelessWidget {
+class MonitorPage extends StatefulWidget {
   const MonitorPage({super.key});
 
   @override
+  State<MonitorPage> createState() => _MonitorPageState();
+}
+
+class _MonitorPageState extends State<MonitorPage> {
+  final SocketService _socketService = SocketService();
+
+  @override
+  void initState() {
+    super.initState();
+    _socketService.connectSocket();
+    _socketService.socket.emit('subscribeToData', "MediGuard12345678");
+    _socketService.socket.on('dataChanged', (data) {
+      Provider.of<SensorProvider>(context, listen: false).setDataSensor =
+          SensorModel.fromJson(data);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _socketService.socket.disconnect();
+    _socketService.socket.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final SensorProvider sensorProvider = Provider.of<SensorProvider>(context);
     Widget body() {
       return ListView(
         padding: EdgeInsets.only(
@@ -87,7 +117,7 @@ class MonitorPage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '96 °C',
+                  '${sensorProvider.temperature} °C',
                   style: primaryText.copyWith(
                     fontSize: 60,
                     fontWeight: bold,
@@ -102,7 +132,7 @@ class MonitorPage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '30%',
+                  '${sensorProvider.altitude}%',
                   style: primaryText.copyWith(
                     fontSize: 60,
                     fontWeight: bold,

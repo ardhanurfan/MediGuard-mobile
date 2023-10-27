@@ -32,7 +32,7 @@ class _MainPageState extends State<MainPage> {
             currentIndex = value;
           });
         },
-        selectedLabelStyle: seccondaryText.copyWith(
+        selectedLabelStyle: secondaryText.copyWith(
           fontSize: 12,
           fontWeight: regular,
           height: 2,
@@ -99,19 +99,17 @@ class _MainPageState extends State<MainPage> {
     }
 
     Widget cartButton() {
-      return Theme(
-        data: ThemeData(useMaterial3: false),
-        child: SizedBox(
-          height: 72,
-          width: 72,
-          child: FittedBox(
-            child: FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: primaryColor,
-              child: Image.asset(
-                'assets/scanner_icon.png',
-                width: 28,
-              ),
+      return SizedBox(
+        height: 72,
+        width: 72,
+        child: FittedBox(
+          child: FloatingActionButton(
+            shape: const CircleBorder(),
+            onPressed: () {},
+            backgroundColor: primaryColor,
+            child: Image.asset(
+              'assets/scanner_icon.png',
+              width: 28,
             ),
           ),
         ),

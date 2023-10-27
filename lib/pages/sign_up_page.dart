@@ -114,7 +114,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 onTap: () => Navigator.pushNamed(context, '/sign-in'),
                 child: Text(
                   'Sign In Here',
-                  style: seccondaryText.copyWith(
+                  style: secondaryText.copyWith(
                     fontSize: 12,
                     fontWeight: regular,
                   ),

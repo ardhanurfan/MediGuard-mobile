@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mediguard/widgets/add_report_popup.dart';
 
 import '../shared/theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/header.dart';
 import '../widgets/logo_horizontal.dart';
+import '../widgets/report_tile.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController reportValueController = TextEditingController();
+
     Widget body() {
       return ListView(
         padding: EdgeInsets.only(
@@ -60,11 +64,39 @@ class ReportPage extends StatelessWidget {
                     fontWeight: regular,
                   ),
                 ),
+                const SizedBox(height: 20),
+                Column(
+                  children: [
+                    ReportTile(
+                      needs: 'Gas Expenses',
+                      price: '12.000',
+                      onRemove: () {},
+                      onSee: () {},
+                    ),
+                    ReportTile(
+                      needs: 'Parks',
+                      price: '20.000',
+                      onRemove: () {},
+                      onSee: () {},
+                    ),
+                  ],
+                ),
                 CustomButton(
-                  marginTop: 28,
+                  marginTop: 20,
                   buttonColor: primaryColor,
-                  buttonText: "Save",
-                  onPressed: () {},
+                  buttonText: "Add",
+                  icon: Icons.add,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AddReportPopUp(
+                          onAdd: () {},
+                          controller: reportValueController,
+                        );
+                      },
+                    );
+                  },
                   textStyle: whiteText,
                 ),
               ],

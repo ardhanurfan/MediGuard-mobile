@@ -12,11 +12,12 @@ Color greyColor = const Color(0xFF616161);
 Color backgroundColor = const Color(0xFDFDFDFD);
 
 TextStyle primaryText = GoogleFonts.poppins(color: primaryColor);
-TextStyle seccondaryText = GoogleFonts.poppins(color: secondaryColor);
+TextStyle secondaryText = GoogleFonts.poppins(color: secondaryColor);
 TextStyle whiteText = GoogleFonts.poppins(color: Colors.white);
 TextStyle greenText = GoogleFonts.poppins(color: greenColor);
 TextStyle greyText = GoogleFonts.poppins(color: greyColor);
 TextStyle disableText = GoogleFonts.poppins(color: disableColor);
+TextStyle redText = GoogleFonts.poppins(color: redColor);
 
 FontWeight light = FontWeight.w300;
 FontWeight regular = FontWeight.w400;
