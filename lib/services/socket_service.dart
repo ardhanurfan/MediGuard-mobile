@@ -4,11 +4,11 @@ import 'package:mediguard/widgets/custom_toast.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketService {
-  late IO.Socket _socket;
+  static late IO.Socket _socket;
 
-  IO.Socket get socket => _socket;
+  static IO.Socket get socket => _socket;
 
-  void connectSocket() {
+  static void connectSocket() {
     _socket = IO.io('http://10.0.2.2:3000', {
       'transports': ['websocket'],
       'autoConnect': false,

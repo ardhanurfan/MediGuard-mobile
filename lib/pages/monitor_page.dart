@@ -18,14 +18,12 @@ class MonitorPage extends StatefulWidget {
 }
 
 class _MonitorPageState extends State<MonitorPage> {
-  final SocketService _socketService = SocketService();
-
   @override
   void initState() {
     super.initState();
-    _socketService.connectSocket();
-    _socketService.socket.emit('subscribeToData', "MediGuard12345678");
-    _socketService.socket.on('dataChanged', (data) {
+    SocketService.connectSocket();
+    SocketService.socket.emit('subscribeToData', "MediGuard12345678");
+    SocketService.socket.on('dataChanged', (data) {
       Provider.of<SensorProvider>(context, listen: false).setDataSensor =
           SensorModel.fromJson(data);
     });
@@ -34,8 +32,8 @@ class _MonitorPageState extends State<MonitorPage> {
   @override
   void dispose() {
     super.dispose();
-    _socketService.socket.disconnect();
-    _socketService.socket.dispose();
+    SocketService.socket.disconnect();
+    SocketService.socket.dispose();
   }
 
   @override
