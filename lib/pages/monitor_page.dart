@@ -5,6 +5,7 @@ import 'package:mediguard/services/socket_service.dart';
 import 'package:mediguard/widgets/custom_button.dart';
 import 'package:mediguard/widgets/logo_horizontal.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../shared/theme.dart';
 import '../widgets/header.dart';
@@ -116,11 +117,14 @@ class _MonitorPageState extends State<MonitorPage> {
                     fontWeight: regular,
                   ),
                 ),
-                Text(
-                  '${sensorProvider.temperature} °C',
-                  style: primaryText.copyWith(
-                    fontSize: 60,
-                    fontWeight: bold,
+                Skeletonizer(
+                  enabled: sensorProvider.temperature == "0",
+                  child: Text(
+                    '${sensorProvider.temperature} °C',
+                    style: primaryText.copyWith(
+                      fontSize: 60,
+                      fontWeight: bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -131,11 +135,14 @@ class _MonitorPageState extends State<MonitorPage> {
                     fontWeight: regular,
                   ),
                 ),
-                Text(
-                  '${sensorProvider.altitude}%',
-                  style: primaryText.copyWith(
-                    fontSize: 60,
-                    fontWeight: bold,
+                Skeletonizer(
+                  enabled: sensorProvider.altitude == "0",
+                  child: Text(
+                    '${sensorProvider.altitude}%',
+                    style: primaryText.copyWith(
+                      fontSize: 60,
+                      fontWeight: bold,
+                    ),
                   ),
                 ),
               ],

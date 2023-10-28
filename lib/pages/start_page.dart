@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediguard/pages/scan_page.dart';
 import 'package:mediguard/shared/theme.dart';
 
 import '../widgets/custom_button.dart';
@@ -66,8 +67,19 @@ class StartPage extends StatelessWidget {
               buttonColor: Colors.white,
               buttonText: "Scan MediGuard",
               onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/main', (route) => false);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ScanPage(
+                      title: "MediGuard Connect",
+                      onDetect: (value, cameraController) {
+                        cameraController.dispose();
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/main', (route) => false);
+                      },
+                    ),
+                  ),
+                );
               },
               textStyle: primaryText,
             ),

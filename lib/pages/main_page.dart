@@ -3,6 +3,8 @@ import 'package:mediguard/pages/account_page.dart';
 import 'package:mediguard/pages/monitor_page.dart';
 import 'package:mediguard/pages/report_page.dart';
 import 'package:mediguard/pages/route_page.dart';
+import 'package:mediguard/pages/scan_page.dart';
+import 'package:mediguard/widgets/custom_toast.dart';
 
 import '../shared/theme.dart';
 
@@ -98,14 +100,31 @@ class _MainPageState extends State<MainPage> {
       );
     }
 
-    Widget cartButton() {
+    Widget scanButton() {
       return SizedBox(
         height: 72,
         width: 72,
         child: FittedBox(
           child: FloatingActionButton(
             shape: const CircleBorder(),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ScanPage(
+                    title: "MediGuard Unlock",
+                    onDetect: (value, cameraController) {
+                      if (value == "123455432a") {
+                        cameraController.dispose();
+                        Navigator.pop(context);
+                      } else {
+                        CustomToast.showFailed(message: "Invalid scanned code");
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
             backgroundColor: primaryColor,
             child: Image.asset(
               'assets/scanner_icon.png',
@@ -133,7 +152,7 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      floatingActionButton: cartButton(),
+      floatingActionButton: scanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: customButtonNav(),
       body: body(),
