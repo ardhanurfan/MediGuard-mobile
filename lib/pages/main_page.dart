@@ -7,6 +7,7 @@ import 'package:mediguard/pages/scan_page.dart';
 import 'package:mediguard/widgets/custom_toast.dart';
 
 import '../shared/theme.dart';
+import '../widgets/unlock_popup.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -114,9 +115,22 @@ class _MainPageState extends State<MainPage> {
                   builder: (context) => ScanPage(
                     title: "MediGuard Unlock",
                     onDetect: (value, cameraController) {
-                      if (value == "123455432a") {
+                      if (value == "1234554321") {
                         cameraController.dispose();
                         Navigator.pop(context);
+                        if (123 <= 2123) {
+                          //cek radius
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return const UnlockPopUp();
+                            },
+                          );
+                        } else {
+                          CustomToast.showFailed(
+                              message: "Cannot unlock. Out of radius.");
+                        }
                       } else {
                         CustomToast.showFailed(message: "Invalid scanned code");
                       }

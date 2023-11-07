@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediguard/pages/navigation_page.dart';
 
 import '../shared/theme.dart';
 import '../widgets/destination_tile.dart';
@@ -78,7 +79,15 @@ class RoutePage extends StatelessWidget {
                   height: 36,
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const NavigationPage(-6.893022, 107.606987),
+                        ),
+                      );
+                    },
                     style: TextButton.styleFrom(
                       backgroundColor: primaryColor,
                       shape: RoundedRectangleBorder(
