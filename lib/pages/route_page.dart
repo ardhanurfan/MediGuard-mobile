@@ -83,8 +83,7 @@ class RoutePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const NavigationPage(-6.893022, 107.606987),
+                          builder: (context) => const NavigationPage(),
                         ),
                       );
                     },

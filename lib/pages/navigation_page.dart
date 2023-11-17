@@ -7,12 +7,9 @@ import 'package:location/location.dart' as loc;
 import 'package:location/location.dart';
 import 'package:mediguard/shared/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:math' show cos, sqrt, asin;
 
 class NavigationPage extends StatefulWidget {
-  const NavigationPage(this.lat, this.lng, {super.key});
-  final double lat;
-  final double lng;
+  const NavigationPage({super.key});
 
   @override
   State<NavigationPage> createState() => _NavigationPageState();
@@ -23,17 +20,32 @@ class _NavigationPageState extends State<NavigationPage> {
   Map<PolylineId, Polyline> polylines = {};
   PolylinePoints polylinePoints = PolylinePoints();
   Location location = Location();
-  Marker? sourcePosition, destinationPosition;
+  Marker? _currPositionMarker;
   loc.LocationData? _currentPosition;
   LatLng curLocation = const LatLng(-6.892520, 107.608534);
   StreamSubscription<loc.LocationData>? locationSubscription;
   bool isFollowCamera = true;
+  List<LatLng> listPoint = [
+    const LatLng(-6.898252, 107.603890),
+    const LatLng(-6.889169, 107.596794),
+    const LatLng(-6.889572, 107.604134),
+    const LatLng(-6.893743, 107.604099),
+    const LatLng(-6.889485, 107.604101),
+  ];
+  List<Marker> listPointMarker = [];
+  List<PolylineWayPoint> listPolyLineWayPoints = [];
+  String distance = '';
+  BitmapDescriptor currentLocationIcon = BitmapDescriptor.defaultMarker;
+  double distanceInKilometers = 0;
+  double durationInMinutes = 0;
 
   @override
   void initState() {
-    super.initState();
-    getNavigation();
-    addMarker();
+    if (mounted) {
+      super.initState();
+      addMarker();
+      getNavigation();
+    }
   }
 
   @override
@@ -75,7 +87,7 @@ class _NavigationPageState extends State<NavigationPage> {
               }
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
           FloatingActionButton(
             heroTag: UniqueKey(),
             backgroundColor: secondaryColor,
@@ -84,50 +96,110 @@ class _NavigationPageState extends State<NavigationPage> {
               color: Colors.white,
             ),
             onPressed: () async {
-              await launchUrl(Uri.parse(
-                  'google.navigation:q=${widget.lat}, ${widget.lng}&key=AIzaSyDuTisit6x-u0A11_YhB6v05CFFQEmPjsk'));
+              String wayPoints = '';
+              for (var element in listPoint) {
+                if (element == listPoint.last) {
+                  wayPoints += ('${element.latitude},${element.longitude}');
+                } else if (element != listPoint.first) {
+                  wayPoints += ('${element.latitude},${element.longitude}|');
+                }
+              }
+              String googleMapsUrl =
+                  'https://www.google.com/maps/dir/?api=1&origin=${listPoint.first.latitude},${listPoint.first.longitude}&destination=${listPoint.first.latitude},${listPoint.first.longitude}&waypoints=$wayPoints&travelmode=driving';
+              await launchUrl(Uri.parse(googleMapsUrl));
             },
           ),
+          const SizedBox(height: 24)
         ],
       ),
-      body: sourcePosition == null
+      body: _currPositionMarker == null
           ? const Center(child: CircularProgressIndicator())
-          : Stack(
-              children: [
-                GoogleMap(
-                  zoomControlsEnabled: true,
-                  zoomGesturesEnabled: true,
-                  polylines: Set<Polyline>.of(polylines.values),
-                  initialCameraPosition: CameraPosition(
-                    target: curLocation,
-                    zoom: 16,
-                  ),
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                  markers: {sourcePosition!, destinationPosition!},
-                  onCameraMoveStarted: () {
-                    setState(() {
-                      isFollowCamera = false;
-                    });
-                  },
-                  onTap: (latLng) {
-                    print(latLng);
-                  },
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller.complete(controller);
-                  },
-                ),
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
+          : SafeArea(
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    zoomControlsEnabled: true,
+                    zoomGesturesEnabled: true,
+                    polylines: Set<Polyline>.of(polylines.values),
+                    initialCameraPosition: CameraPosition(
+                      target: curLocation,
+                      zoom: 16,
+                    ),
+                    // myLocationEnabled: true,
+                    // myLocationButtonEnabled: true,
+                    markers: {
+                      ...listPointMarker.toSet(),
+                      ...{_currPositionMarker!}
                     },
-                    child: const Icon(Icons.arrow_back),
+                    onCameraMoveStarted: () {
+                      setState(() {
+                        isFollowCamera = false;
+                      });
+                    },
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
                   ),
-                ),
-              ],
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      margin:
+                          const EdgeInsets.only(right: 24, top: 16, left: 72),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: greyColor.withOpacity(0.1),
+                            offset: const Offset(
+                              0,
+                              0,
+                            ),
+                            blurRadius: 2,
+                            spreadRadius: 1,
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Next Destinations',
+                            style: secondaryText.copyWith(
+                              fontSize: 16,
+                              fontWeight: bold,
+                            ),
+                          ),
+                          Text(
+                            'Distance: ${distanceInKilometers.toStringAsFixed(2)} km',
+                            style: primaryText.copyWith(
+                              fontWeight: medium,
+                            ),
+                          ),
+                          Text(
+                            'Duration: ${durationInMinutes.toStringAsFixed(2)} mins',
+                            style: primaryText.copyWith(
+                              fontWeight: medium,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 24),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(Icons.arrow_back),
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }
@@ -157,8 +229,8 @@ class _NavigationPageState extends State<NavigationPage> {
       _currentPosition = await location.getLocation();
       curLocation =
           LatLng(_currentPosition!.latitude!, _currentPosition!.longitude!);
-      locationSubscription =
-          location.onLocationChanged.listen((LocationData updatedLocation) {
+      locationSubscription = location.onLocationChanged
+          .listen((LocationData updatedLocation) async {
         if (isFollowCamera) {
           controller?.animateCamera(
             CameraUpdate.newCameraPosition(
@@ -170,43 +242,31 @@ class _NavigationPageState extends State<NavigationPage> {
             ),
           );
         }
-        if (mounted) {
-          controller
-              ?.showMarkerInfoWindow(MarkerId(sourcePosition!.markerId.value));
-          setState(() {
-            curLocation =
-                LatLng(updatedLocation.latitude!, updatedLocation.longitude!);
-            sourcePosition = Marker(
-              markerId: MarkerId(updatedLocation.toString()),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueBlue),
-              position:
-                  LatLng(updatedLocation.latitude!, updatedLocation.longitude!),
-              infoWindow: InfoWindow(
-                  title:
-                      '${double.parse((getDistance(LatLng(widget.lat, widget.lng)).toStringAsFixed(2)))} km'),
-              onTap: () {
-                print('market tapped');
-              },
-            );
-          });
-          getDirections(LatLng(widget.lat, widget.lng));
-        }
+        setState(() {
+          curLocation =
+              LatLng(updatedLocation.latitude!, updatedLocation.longitude!);
+          _currPositionMarker = Marker(
+            markerId: const MarkerId('currentMarker'),
+            icon: currentLocationIcon,
+            position: LatLng(curLocation.latitude, curLocation.longitude),
+            infoWindow: const InfoWindow(
+              title: "MediGuard",
+            ),
+          );
+        });
+        controller?.showMarkerInfoWindow(const MarkerId('currentMarker'));
       });
+      getDirections();
     }
   }
 
-  getDirections(LatLng dst) async {
+  Future<void> getDirections() async {
     List<LatLng> polylineCoordinates = [];
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       'AIzaSyDuTisit6x-u0A11_YhB6v05CFFQEmPjsk',
       PointLatLng(curLocation.latitude, curLocation.longitude),
-      PointLatLng(dst.latitude, dst.longitude),
-      wayPoints: <PolylineWayPoint>[
-        PolylineWayPoint(location: "-6.893841, 107.605092", stopOver: true),
-        PolylineWayPoint(location: "-6.893841, 107.605092", stopOver: true),
-        PolylineWayPoint(location: "-6.893841, 107.605092", stopOver: true),
-      ],
+      PointLatLng(listPoint.first.latitude, listPoint.first.longitude),
+      wayPoints: listPolyLineWayPoints,
       travelMode: TravelMode.driving,
       optimizeWaypoints: true,
     );
@@ -214,17 +274,21 @@ class _NavigationPageState extends State<NavigationPage> {
       for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       }
-    } else {
-      print(result.errorMessage);
     }
-    addPolyLine(polylineCoordinates);
+    await addPolyLine(polylineCoordinates);
+
+    // Menghitung distance dan duration
+    setState(() {
+      distanceInKilometers = result.distanceValue! / 1000;
+      durationInMinutes = result.durationValue! / 60;
+    });
   }
 
   addPolyLine(List<LatLng> polylineCoordinates) {
     PolylineId id = const PolylineId('poly');
     Polyline polyline = Polyline(
       polylineId: id,
-      color: Colors.blue,
+      color: secondaryColor,
       points: polylineCoordinates,
       width: 5,
     );
@@ -232,32 +296,48 @@ class _NavigationPageState extends State<NavigationPage> {
     setState(() {});
   }
 
-  double calculateDistance(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
-  }
-
-  double getDistance(LatLng destposition) {
-    return calculateDistance(curLocation.latitude, curLocation.longitude,
-        destposition.latitude, destposition.longitude);
-  }
-
   addMarker() {
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration.empty, "assets/myloc.png")
+        .then(
+      (icon) {
+        currentLocationIcon = icon;
+      },
+    );
     setState(() {
-      sourcePosition = Marker(
-        markerId: const MarkerId('source'),
-        position: curLocation,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+      _currPositionMarker = Marker(
+        markerId: const MarkerId('currentMarker'),
+        position: listPoint.first,
+        icon: currentLocationIcon,
       );
-      destinationPosition = Marker(
-        markerId: const MarkerId('destination'),
-        position: LatLng(widget.lat, widget.lng),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
-      );
+      for (var latLng in listPoint) {
+        if (latLng == listPoint.first) {
+          listPointMarker.add(
+            Marker(
+              markerId: MarkerId(
+                latLng.latitude.toString() + latLng.longitude.toString(),
+              ),
+              position: latLng,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueCyan),
+              infoWindow: const InfoWindow(title: "Gudang"),
+            ),
+          );
+        } else {
+          listPointMarker.add(
+            Marker(
+              markerId: MarkerId(
+                latLng.latitude.toString() + latLng.longitude.toString(),
+              ),
+              position: latLng,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueRed),
+            ),
+          );
+          listPolyLineWayPoints.add(PolylineWayPoint(
+              location: '${latLng.latitude},${latLng.longitude}'));
+        }
+      }
     });
   }
 }
