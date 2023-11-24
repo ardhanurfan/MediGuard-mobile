@@ -9,7 +9,9 @@ import 'package:mediguard/shared/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NavigationPage extends StatefulWidget {
-  const NavigationPage({super.key});
+  const NavigationPage({super.key, required this.listPoint});
+
+  final List<LatLng> listPoint;
 
   @override
   State<NavigationPage> createState() => _NavigationPageState();
@@ -25,13 +27,6 @@ class _NavigationPageState extends State<NavigationPage> {
   LatLng curLocation = const LatLng(-6.892520, 107.608534);
   StreamSubscription<loc.LocationData>? locationSubscription;
   bool isFollowCamera = true;
-  List<LatLng> listPoint = [
-    const LatLng(-6.898252, 107.603890),
-    const LatLng(-6.889169, 107.596794),
-    const LatLng(-6.889572, 107.604134),
-    const LatLng(-6.893743, 107.604099),
-    const LatLng(-6.889485, 107.604101),
-  ];
   List<Marker> listPointMarker = [];
   List<PolylineWayPoint> listPolyLineWayPoints = [];
   String distance = '';
@@ -97,15 +92,19 @@ class _NavigationPageState extends State<NavigationPage> {
             ),
             onPressed: () async {
               String wayPoints = '';
-              for (var element in listPoint) {
-                if (element == listPoint.last) {
-                  wayPoints += ('${element.latitude},${element.longitude}');
-                } else if (element != listPoint.first) {
-                  wayPoints += ('${element.latitude},${element.longitude}|');
+              for (var element in widget.listPoint) {
+                if (element != widget.listPoint.first &&
+                    element != widget.listPoint.last) {
+                  if (element ==
+                      widget.listPoint[widget.listPoint.length - 2]) {
+                    wayPoints += ('${element.latitude},${element.longitude}');
+                  } else {
+                    wayPoints += ('${element.latitude},${element.longitude}|');
+                  }
                 }
               }
               String googleMapsUrl =
-                  'https://www.google.com/maps/dir/?api=1&origin=${listPoint.first.latitude},${listPoint.first.longitude}&destination=${listPoint.first.latitude},${listPoint.first.longitude}&waypoints=$wayPoints&travelmode=driving';
+                  'https://www.google.com/maps/dir/?api=1&origin=${widget.listPoint.first.latitude},${widget.listPoint.first.longitude}&destination=${widget.listPoint.last.latitude},${widget.listPoint.last.longitude}&waypoints=$wayPoints&travelmode=driving';
               await launchUrl(Uri.parse(googleMapsUrl));
             },
           ),
@@ -265,7 +264,8 @@ class _NavigationPageState extends State<NavigationPage> {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       'AIzaSyDuTisit6x-u0A11_YhB6v05CFFQEmPjsk',
       PointLatLng(curLocation.latitude, curLocation.longitude),
-      PointLatLng(listPoint.first.latitude, listPoint.first.longitude),
+      PointLatLng(
+          widget.listPoint.last.latitude, widget.listPoint.last.longitude),
       wayPoints: listPolyLineWayPoints,
       travelMode: TravelMode.driving,
       optimizeWaypoints: true,
@@ -288,7 +288,7 @@ class _NavigationPageState extends State<NavigationPage> {
     PolylineId id = const PolylineId('poly');
     Polyline polyline = Polyline(
       polylineId: id,
-      color: secondaryColor,
+      color: orangeColor,
       points: polylineCoordinates,
       width: 5,
     );
@@ -307,11 +307,11 @@ class _NavigationPageState extends State<NavigationPage> {
     setState(() {
       _currPositionMarker = Marker(
         markerId: const MarkerId('currentMarker'),
-        position: listPoint.first,
+        position: widget.listPoint.first,
         icon: currentLocationIcon,
       );
-      for (var latLng in listPoint) {
-        if (latLng == listPoint.first) {
+      for (var latLng in widget.listPoint) {
+        if (latLng == widget.listPoint.first) {
           listPointMarker.add(
             Marker(
               markerId: MarkerId(
@@ -334,8 +334,10 @@ class _NavigationPageState extends State<NavigationPage> {
                   BitmapDescriptor.hueRed),
             ),
           );
-          listPolyLineWayPoints.add(PolylineWayPoint(
-              location: '${latLng.latitude},${latLng.longitude}'));
+          if (latLng == widget.listPoint.last) {
+            listPolyLineWayPoints.add(PolylineWayPoint(
+                location: '${latLng.latitude},${latLng.longitude}'));
+          }
         }
       }
     });

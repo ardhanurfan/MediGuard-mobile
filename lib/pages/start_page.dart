@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mediguard/pages/connecting_page.dart';
 import 'package:mediguard/pages/scan_page.dart';
-import 'package:mediguard/shared/theme.dart';
 
+import '../shared/theme.dart';
 import '../widgets/custom_button.dart';
 
-class StartPage extends StatelessWidget {
+class StartPage extends StatefulWidget {
   const StartPage({super.key});
 
+  @override
+  State<StartPage> createState() => _StartPageState();
+}
+
+class _StartPageState extends State<StartPage> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,16 +73,23 @@ class StartPage extends StatelessWidget {
               marginBottom: 16,
               buttonColor: Colors.white,
               buttonText: "Scan MediGuard",
-              onPressed: () {
+              onPressed: () async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ScanPage(
                       title: "MediGuard Connect",
                       onDetect: (value, cameraController) {
-                        cameraController.dispose();
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, '/main', (route) => false);
+                        if (value != null) {
+                          cameraController.dispose();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ConnectiongPage(value: value),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),

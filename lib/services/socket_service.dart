@@ -9,15 +9,19 @@ class SocketService {
   static IO.Socket get socket => _socket;
 
   static void connectSocket() {
-    _socket = IO.io('http://10.0.2.2:3000', {
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'username': 'Medi'
-    });
-    _socket.connect();
-    // _socket.onConnect((data) => print("Connection established"));
-    _socket.onConnectError((data) =>
-        CustomToast.showFailed(message: "MediGuard Device server error"));
-    // _socket.onDisconnect((data) => print("Socket IO server disconnected"));
+    try {
+      _socket = IO.io('http://10.0.2.2:3000/', {
+        'transports': ['websocket'],
+        'autoConnect': false,
+        'username': 'Medi'
+      });
+      _socket.connect();
+      _socket.onConnect((data) => print("Connection established"));
+      _socket.onConnectError((data) =>
+          CustomToast.showFailed(message: "MediGuard Device server error"));
+      // _socket.onDisconnect((data) => print("Socket IO server disconnected"));
+    } catch (e) {
+      print('Error connecting to the socket: $e');
+    }
   }
 }

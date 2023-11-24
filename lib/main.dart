@@ -4,7 +4,7 @@ import 'package:mediguard/pages/sign_in_page.dart';
 import 'package:mediguard/pages/sign_up_page.dart';
 import 'package:mediguard/pages/splash_page.dart';
 import 'package:mediguard/pages/start_page.dart';
-import 'package:mediguard/providers/sensor_provider.dart';
+import 'package:mediguard/providers/unit_provider.dart';
 import 'package:mediguard/shared/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => SensorProvider()),
+        ChangeNotifierProvider(create: (context) => UnitProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

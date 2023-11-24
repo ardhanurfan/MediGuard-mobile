@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mediguard/models/sensor_model.dart';
-import 'package:mediguard/providers/sensor_provider.dart';
+import 'package:mediguard/models/unit_model.dart';
+import 'package:mediguard/providers/unit_provider.dart';
 import 'package:mediguard/services/socket_service.dart';
 import 'package:mediguard/widgets/custom_button.dart';
 import 'package:mediguard/widgets/logo_horizontal.dart';
@@ -24,8 +24,8 @@ class _MonitorPageState extends State<MonitorPage> {
     SocketService.connectSocket();
     SocketService.socket.emit('subscribeToData', "MediGuard12345678");
     SocketService.socket.on('dataChanged', (data) {
-      Provider.of<SensorProvider>(context, listen: false).setDataSensor =
-          SensorModel.fromJson(data);
+      Provider.of<UnitProvider>(context, listen: false).setDataSensor =
+          UnitModel.fromJson(data);
     });
   }
 
@@ -38,7 +38,7 @@ class _MonitorPageState extends State<MonitorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final SensorProvider sensorProvider = Provider.of<SensorProvider>(context);
+    final UnitProvider unitProvider = Provider.of<UnitProvider>(context);
     Widget body() {
       return ListView(
         padding: EdgeInsets.only(
@@ -68,7 +68,7 @@ class _MonitorPageState extends State<MonitorPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'MG000000-01',
+                  unitProvider.mediguard.unitId,
                   style: greyText.copyWith(
                     fontSize: 16,
                     fontWeight: regular,
@@ -84,21 +84,36 @@ class _MonitorPageState extends State<MonitorPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   height: 28,
-                  width: 120,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: const Color(0xFFF3F2E0),
+                    color: unitProvider.mediguard.temperature >
+                                unitProvider.deliveryCat.maxSuhu ||
+                            unitProvider.mediguard.temperature <
+                                unitProvider.deliveryCat.minSuhu
+                        ? redColor.withOpacity(0.1)
+                        : greenColor.withOpacity(0.1),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircleAvatar(
                         radius: 8,
-                        backgroundColor: greenColor,
+                        backgroundColor: unitProvider.mediguard.temperature >
+                                    unitProvider.deliveryCat.maxSuhu ||
+                                unitProvider.mediguard.temperature <
+                                    unitProvider.deliveryCat.minSuhu
+                            ? redColor
+                            : greenColor,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Safe',
+                        unitProvider.mediguard.temperature >
+                                unitProvider.deliveryCat.maxSuhu
+                            ? "Over Temperature"
+                            : unitProvider.mediguard.temperature <
+                                    unitProvider.deliveryCat.minSuhu
+                                ? "Under Temperature"
+                                : 'Safe',
                         style: greyText.copyWith(
                           fontSize: 16,
                           fontWeight: regular,
@@ -116,9 +131,9 @@ class _MonitorPageState extends State<MonitorPage> {
                   ),
                 ),
                 Skeletonizer(
-                  enabled: sensorProvider.temperature == "0",
+                  enabled: unitProvider.mediguard.temperature == 0,
                   child: Text(
-                    '${sensorProvider.temperature} °C',
+                    '${unitProvider.mediguard.temperature} °C',
                     style: primaryText.copyWith(
                       fontSize: 60,
                       fontWeight: bold,
@@ -134,9 +149,27 @@ class _MonitorPageState extends State<MonitorPage> {
                   ),
                 ),
                 Skeletonizer(
-                  enabled: sensorProvider.altitude == "0",
+                  enabled: unitProvider.mediguard.humidity == 0,
                   child: Text(
-                    '${sensorProvider.altitude}%',
+                    '${unitProvider.mediguard.humidity} %',
+                    style: primaryText.copyWith(
+                      fontSize: 60,
+                      fontWeight: bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Battery :',
+                  style: greyText.copyWith(
+                    fontSize: 16,
+                    fontWeight: regular,
+                  ),
+                ),
+                Skeletonizer(
+                  enabled: unitProvider.mediguard.battery == "0",
+                  child: Text(
+                    '${unitProvider.mediguard.battery} %',
                     style: primaryText.copyWith(
                       fontSize: 60,
                       fontWeight: bold,

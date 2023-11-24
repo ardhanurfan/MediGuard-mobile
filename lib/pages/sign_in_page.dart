@@ -74,8 +74,7 @@ class _SignInPageState extends State<SignInPage> {
                   buttonColor: primaryColor,
                   buttonText: "Log In",
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, '/start', (route) => false);
+                    Navigator.pushNamed(context, '/start');
                   },
                   textStyle: whiteText,
                 ),
@@ -95,28 +94,28 @@ class _SignInPageState extends State<SignInPage> {
             ),
           ),
           const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'New Member? ',
-                style: primaryText.copyWith(
-                  fontSize: 12,
-                  fontWeight: regular,
-                ),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/sign-up'),
-                child: Text(
-                  'Sign Up Here',
-                  style: secondaryText.copyWith(
-                    fontSize: 12,
-                    fontWeight: regular,
-                  ),
-                ),
-              ),
-            ],
-          )
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Text(
+          //       'New Member? ',
+          //       style: primaryText.copyWith(
+          //         fontSize: 12,
+          //         fontWeight: regular,
+          //       ),
+          //     ),
+          //     GestureDetector(
+          //       onTap: () => Navigator.pushNamed(context, '/sign-up'),
+          //       child: Text(
+          //         'Sign Up Here',
+          //         style: secondaryText.copyWith(
+          //           fontSize: 12,
+          //           fontWeight: regular,
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // )
         ],
       );
     }

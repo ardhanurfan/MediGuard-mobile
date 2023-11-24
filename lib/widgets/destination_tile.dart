@@ -8,10 +8,16 @@ class DestinationTile extends StatelessWidget {
     super.key,
     required this.isDone,
     required this.isLast,
+    required this.no,
+    required this.address,
+    required this.title,
   });
 
   final bool isDone;
   final bool isLast;
+  final String no;
+  final String title;
+  final String address;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +36,7 @@ class DestinationTile extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  '1',
+                  no,
                   style: whiteText.copyWith(
                     fontSize: 20,
                     fontWeight: semibold,
@@ -43,14 +49,14 @@ class DestinationTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Apotek Jaya Abadi Nusantara',
+                    title,
                     style: (isDone ? disableText : primaryText).copyWith(
                       fontSize: 14,
                       fontWeight: semibold,
                     ),
                   ),
                   Text(
-                    'Jln. Ajisutomo No. 21aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                    address,
                     style: (isDone ? disableText : primaryText).copyWith(
                       fontSize: 10,
                       fontWeight: regular,
