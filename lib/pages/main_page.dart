@@ -119,13 +119,14 @@ class _MainPageState extends State<MainPage> {
                   builder: (context) => ScanPage(
                     title: "MediGuard Unlock",
                     onDetect: (value, cameraController) {
-                      if (value != null) {
+                      if (value != null &&
+                          value ==
+                              unitProvider.mediguard.currentTransaction
+                                  .toString()) {
                         cameraController.dispose();
                         Navigator.pop(context);
                         //cek radius
-                        if (value ==
-                            unitProvider.mediguard.currentTransaction
-                                .toString()) {
+                        if (123 == 123) {
                           showDialog(
                             context: context,
                             barrierDismissible: false,

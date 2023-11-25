@@ -98,6 +98,20 @@ class _StartPageState extends State<StartPage> {
               textStyle: primaryText,
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 60),
+            child: CustomButton(
+              marginTop: 32,
+              marginBottom: 16,
+              buttonColor: redColor,
+              buttonText: "Log Out",
+              onPressed: () async {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/sign-in', (route) => false);
+              },
+              textStyle: whiteText,
+            ),
+          ),
         ],
       ),
     );

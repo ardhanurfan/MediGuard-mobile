@@ -10,9 +10,10 @@ class SocketService {
 
   static void connectSocket() {
     try {
-      _socket = IO.io('http://10.0.2.2:3000/', {
+      // _socket = IO.io('http://10.0.2.2:3000/', {
+      _socket = IO.io('https://mediguard.ardhanurfan.my.id/', {
         'transports': ['websocket'],
-        'autoConnect': false,
+        'autoConnect': true,
         'username': 'Medi'
       });
       _socket.connect();

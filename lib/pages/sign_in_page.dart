@@ -74,7 +74,8 @@ class _SignInPageState extends State<SignInPage> {
                   buttonColor: primaryColor,
                   buttonText: "Log In",
                   onPressed: () {
-                    Navigator.pushNamed(context, '/start');
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/start', (route) => false);
                   },
                   textStyle: whiteText,
                 ),
