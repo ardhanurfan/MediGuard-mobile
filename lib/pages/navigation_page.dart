@@ -334,7 +334,7 @@ class _NavigationPageState extends State<NavigationPage> {
                   BitmapDescriptor.hueRed),
             ),
           );
-          if (latLng == widget.listPoint.last) {
+          if (latLng != widget.listPoint.last) {
             listPolyLineWayPoints.add(PolylineWayPoint(
                 location: '${latLng.latitude},${latLng.longitude}'));
           }

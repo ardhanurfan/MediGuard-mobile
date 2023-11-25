@@ -48,7 +48,7 @@ class _RoutePageState extends State<RoutePage> {
             .toList();
         LocationData currentPosition = await location.getLocation();
         point.insert(
-            0, LatLng(currentPosition.altitude!, currentPosition.longitude!));
+            0, LatLng(currentPosition.latitude!, currentPosition.longitude!));
       }
     } catch (e) {
       CustomToast.showFailed(message: e.toString());
@@ -131,7 +131,8 @@ class _RoutePageState extends State<RoutePage> {
                               isLast: dataTransaction.length == i,
                               address: transaction.address.alamat,
                               no: i.toString(),
-                              title: transaction.address.channel,
+                              title: transaction.address.channel +
+                                  transaction.orderNum.toString(),
                             );
                           },
                         ).toList(),

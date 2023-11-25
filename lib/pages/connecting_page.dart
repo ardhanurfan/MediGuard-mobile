@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediguard/providers/unit_provider.dart';
+import 'package:mediguard/services/unit_service.dart';
 import 'package:mediguard/shared/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,8 @@ class _ConnectiongPageState extends State<ConnectiongPage> {
     final navigator = Navigator.of(context);
 
     try {
-      if (await unitProvider.connect(unitId: "MediGuard12345678")) {
+      if (await unitProvider.connect(unitId: unitId) &&
+          await UnitService().lockMediGuard(unitId: unitId, value: false)) {
         CustomToast.showSuccess(message: "Connect to MediGuard success");
         navigator.pushNamedAndRemoveUntil('/main', (route) => false);
       } else {

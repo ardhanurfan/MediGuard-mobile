@@ -20,20 +20,27 @@ class MonitorPage extends StatefulWidget {
 class _MonitorPageState extends State<MonitorPage> {
   @override
   void initState() {
-    super.initState();
-    SocketService.connectSocket();
-    SocketService.socket.emit('subscribeToData', "MediGuard12345678");
-    SocketService.socket.on('dataChanged', (data) {
-      Provider.of<UnitProvider>(context, listen: false).setDataSensor =
-          UnitModel.fromJson(data);
-    });
+    if (mounted) {
+      super.initState();
+      final UnitProvider unitProvider =
+          Provider.of<UnitProvider>(context, listen: false);
+      SocketService.connectSocket();
+      SocketService.socket
+          .emit('subscribeToData', unitProvider.mediguard.unitId);
+      SocketService.socket.on('dataChanged', (data) {
+        Provider.of<UnitProvider>(context, listen: false).setDataSensor =
+            UnitModel.fromJson(data);
+      });
+    }
   }
 
   @override
   void dispose() {
-    super.dispose();
-    SocketService.socket.disconnect();
-    SocketService.socket.dispose();
+    if (mounted) {
+      super.dispose();
+      SocketService.socket.disconnect();
+      SocketService.socket.dispose();
+    }
   }
 
   @override
@@ -167,7 +174,7 @@ class _MonitorPageState extends State<MonitorPage> {
                   ),
                 ),
                 Skeletonizer(
-                  enabled: unitProvider.mediguard.battery == "0",
+                  enabled: unitProvider.mediguard.battery == 0,
                   child: Text(
                     '${unitProvider.mediguard.battery} %',
                     style: primaryText.copyWith(

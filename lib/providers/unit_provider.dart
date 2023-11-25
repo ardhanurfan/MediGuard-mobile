@@ -17,13 +17,30 @@ class UnitProvider extends ChangeNotifier {
 
   Future<bool> connect({required String unitId}) async {
     try {
+      _mediguard = await UnitService().getUnitById(unitId: unitId);
+      if (_mediguard.orderNum.isEmpty) {
+        throw "MediGuard Not Assigned";
+      }
       _mediguard = await UnitService().connectMediGuard(unitId: unitId);
       _deliveryCat = await UnitService()
-          .getDeliveryCat(orderNum: _mediguard.currentTransaction);
+          .getDeliveryCat(orderNum: _mediguard.currentTransaction!);
       notifyListeners();
       return true;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<bool> getUnitById({required String unitId}) async {
+    try {
+      _mediguard = await UnitService().getUnitById(unitId: unitId);
+      if (_mediguard.orderNum.isEmpty) {
+        return false;
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

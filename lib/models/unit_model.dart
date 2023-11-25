@@ -6,7 +6,8 @@ class UnitModel extends Equatable {
   final int temperature;
   final int humidity;
   final int battery;
-  final int currentTransaction;
+  final int? currentTransaction;
+  final List<int> orderNum;
 
   const UnitModel({
     required this.id,
@@ -15,6 +16,7 @@ class UnitModel extends Equatable {
     required this.humidity,
     required this.battery,
     required this.currentTransaction,
+    required this.orderNum,
   });
 
   factory UnitModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,11 @@ class UnitModel extends Equatable {
       humidity: json['humidity'],
       battery: json['batteryCapacity'],
       currentTransaction: json['currentTransaction'],
+      orderNum: json['orderNum'] != null
+          ? List<int>.from(
+              json['orderNum'].map((e) => e),
+            )
+          : [],
     );
   }
 
@@ -36,6 +43,7 @@ class UnitModel extends Equatable {
       'humidity': humidity,
       'battery': battery,
       'currentTransaction': currentTransaction,
+      'orderNum': orderNum,
     };
   }
 
@@ -47,5 +55,6 @@ class UnitModel extends Equatable {
         humidity,
         battery,
         currentTransaction,
+        orderNum,
       ];
 }

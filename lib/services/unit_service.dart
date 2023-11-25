@@ -63,6 +63,31 @@ class UnitService {
     }
   }
 
+  Future<UnitModel> getUnitById({required String unitId}) async {
+    late Uri url = UrlService.api('unit/transactionUnits/$unitId');
+
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+
+    var response = await http.get(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'] as List;
+      if (data.isNotEmpty) {
+        var dataUnit = data.first as Map<String, dynamic>;
+        return UnitModel.fromJson(dataUnit);
+      } else {
+        throw "MediGuard Not Assigned";
+      }
+    } else {
+      throw "Get data failed";
+    }
+  }
+
   Future<DeliveryCatModel> getDeliveryCat({required int orderNum}) async {
     late Uri url = UrlService.api('deliveryCat/get/$orderNum');
 
@@ -84,6 +109,72 @@ class UnitService {
       }
     } else {
       throw "Get data failed";
+    }
+  }
+
+  Future<bool> lockMediGuard({
+    required String unitId,
+    required bool value,
+  }) async {
+    late Uri url = UrlService.api('unit/device-lock');
+    var headers = {
+      'Content-Type': 'application/json',
+      // 'Authorization': await UserService.getTokenPreference() ?? '',
+    };
+
+    var body = {
+      'device': unitId,
+      'value': value,
+    };
+
+    var response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+      encoding: Encoding.getByName('utf-8'),
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'];
+      if (data) {
+        return true;
+      } else {
+        throw "MediGuard not found";
+      }
+    } else {
+      throw "Change lock state MediGuard Failed";
+    }
+  }
+
+  Future<bool> nextDestination({
+    required String unitId,
+  }) async {
+    late Uri url = UrlService.api('unit/next');
+    var headers = {
+      'Content-Type': 'application/json',
+      // 'Authorization': await UserService.getTokenPreference() ?? '',
+    };
+
+    var body = {
+      'unitId': unitId,
+    };
+
+    var response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+      encoding: Encoding.getByName('utf-8'),
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'];
+      if (data != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      throw "Next Destination Failed";
     }
   }
 }

@@ -4,7 +4,9 @@ import 'package:mediguard/pages/monitor_page.dart';
 import 'package:mediguard/pages/report_page.dart';
 import 'package:mediguard/pages/route_page.dart';
 import 'package:mediguard/pages/scan_page.dart';
+import 'package:mediguard/providers/unit_provider.dart';
 import 'package:mediguard/widgets/custom_toast.dart';
+import 'package:provider/provider.dart';
 
 import '../shared/theme.dart';
 import '../widgets/unlock_popup.dart';
@@ -21,6 +23,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    UnitProvider unitProvider = Provider.of<UnitProvider>(context);
+
     Widget customButtonNav() {
       return BottomNavigationBar(
         backgroundColor: Colors.white,
@@ -115,11 +119,13 @@ class _MainPageState extends State<MainPage> {
                   builder: (context) => ScanPage(
                     title: "MediGuard Unlock",
                     onDetect: (value, cameraController) {
-                      if (value == "1234554321") {
+                      if (value != null) {
                         cameraController.dispose();
                         Navigator.pop(context);
-                        if (123 <= 2123) {
-                          //cek radius
+                        //cek radius
+                        if (value ==
+                            unitProvider.mediguard.currentTransaction
+                                .toString()) {
                           showDialog(
                             context: context,
                             barrierDismissible: false,
