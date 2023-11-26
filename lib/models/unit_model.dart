@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class UnitModel extends Equatable {
   final String id;
   final String unitId;
-  final int temperature;
+  final double temperature;
   final int humidity;
   final int battery;
   final int? currentTransaction;
@@ -24,7 +24,7 @@ class UnitModel extends Equatable {
       id: json['_id'],
       unitId: json['unitId'],
       temperature: json['temperature'],
-      humidity: json['humidity'],
+      humidity: json['humidity'].toInt(),
       battery: json['batteryCapacity'],
       currentTransaction: json['currentTransaction'],
       orderNum: json['orderNum'] != null

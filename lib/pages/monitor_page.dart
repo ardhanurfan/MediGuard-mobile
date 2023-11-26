@@ -140,7 +140,7 @@ class _MonitorPageState extends State<MonitorPage> {
                 Skeletonizer(
                   enabled: unitProvider.mediguard.temperature == 0,
                   child: Text(
-                    '${unitProvider.mediguard.temperature} °C',
+                    '${unitProvider.mediguard.temperature.toStringAsFixed(2)} °C',
                     style: primaryText.copyWith(
                       fontSize: 60,
                       fontWeight: bold,

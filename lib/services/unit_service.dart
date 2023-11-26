@@ -124,7 +124,7 @@ class UnitService {
 
     var body = {
       'device': unitId,
-      'value': value,
+      'value': value.toString(),
     };
 
     var response = await http.post(
