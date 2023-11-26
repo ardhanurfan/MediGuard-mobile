@@ -4,7 +4,7 @@ class UnitModel extends Equatable {
   final String id;
   final String unitId;
   final double temperature;
-  final int humidity;
+  final double humidity;
   final int battery;
   final int? currentTransaction;
   final List<int> orderNum;
@@ -23,8 +23,8 @@ class UnitModel extends Equatable {
     return UnitModel(
       id: json['_id'],
       unitId: json['unitId'],
-      temperature: json['temperature'],
-      humidity: json['humidity'].toInt(),
+      temperature: json['temperature'].toDouble(),
+      humidity: json['humidity'].toDouble(),
       battery: json['batteryCapacity'],
       currentTransaction: json['currentTransaction'],
       orderNum: json['orderNum'] != null
