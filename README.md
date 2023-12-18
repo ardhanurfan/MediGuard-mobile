@@ -73,8 +73,9 @@ Install all dependencies
 
 ```bash
 flutter pub get
-# and run debugger on your IDE
 ```
+
+and run debugger on your IDE
 
 <a name="team">
 
